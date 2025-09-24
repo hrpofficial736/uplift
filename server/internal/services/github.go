@@ -1,4 +1,4 @@
-package github
+package services
 
 import (
 	"encoding/json"
@@ -30,7 +30,7 @@ type Repo struct {
 type Content struct {
 	Name        string `json:"name"`
 	Path        string `json:"path"`
-	Type        string `json:"type"` // "file" or "dir"
+	Type        string `json:"type"`
 	DownloadURL string `json:"download_url"`
 }
 

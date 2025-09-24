@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hrpofficial736/uplift/server/internal/services/github"
+	"github.com/hrpofficial736/uplift/server/internal/services"
+	// "github.com/hrpofficial736/uplift/server/internal/services"
 )
 
 
@@ -22,6 +23,7 @@ func handleApiRoute (res http.ResponseWriter, req *http.Request) {
 
 type Request struct {
 	Url string
+	Prompt string
 }
 
 func processGithubUrlHandler (res http.ResponseWriter, req *http.Request) {
@@ -36,15 +38,18 @@ func processGithubUrlHandler (res http.ResponseWriter, req *http.Request) {
 		http.Error(res, "Invalid request payload", http.StatusBadRequest);
 		return;
 	}
-	responseFromGithubService := github.FetchRepoInfo(request.Url);
-	defer req.Body.Close();
 
-	res.Header().Set("Content-Type", "application/json");
-	response := map[string] any{
-		"status": "OK",
-		"url": request.Url,
-		"repo_info": responseFromGithubService,
-	}
-	res.WriteHeader(http.StatusOK);
-	json.NewEncoder(res).Encode(response);
+	services.McpClientConnector("review_code", services.CallLLM, request.Prompt)	
+
+	// responseFromGithubService := services.FetchRepoInfo(request.Url);
+	// defer req.Body.Close();
+
+	// res.Header().Set("Content-Type", "application/json");
+	// response := map[string] any{
+	// 	"status": "OK",
+	// 	"url": request.Url,
+	// 	"repo_info": responseFromGithubService,
+	// }
+	// res.WriteHeader(http.StatusOK);
+	// json.NewEncoder(res).Encode(response);
 }

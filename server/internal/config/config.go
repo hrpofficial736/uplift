@@ -12,6 +12,9 @@ type Config struct {
 	DatabaseUrl string
 	GithubAccessToken string
 	GithubBaseUrl string
+	GeminiBaseUrl string
+	GeminiModel string
+	GeminiAPIKey string
 }
 
 
@@ -26,8 +29,11 @@ func ConfigLoad () *Config {
 		DatabaseUrl: getEnv("DATABASE_URL", "hello"),
 		GithubAccessToken: getEnv("GITHUB_ACCESS_TOKEN", "token"),
 		GithubBaseUrl: getEnv("GITHUB_API_BASE_URL", "github_url"),
+		GeminiBaseUrl: getEnv("GEMINI_BASE_URL", "gemini_url"),
+		GeminiModel: getEnv("GEMINI_MODEL", "gemini-2.0-flash"),
+		GeminiAPIKey: getEnv("GEMINI_API_KEY", "gemini_api_key"),
 	}
-	log.Printf("Config loaded, PORT = %s and DATABASE_URL = %s", cfg.Port, cfg.DatabaseUrl);
+	log.Println("Config loaded!");
 	return cfg;
 }
 
