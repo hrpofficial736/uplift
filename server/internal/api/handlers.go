@@ -24,6 +24,7 @@ func handleApiRoute (res http.ResponseWriter, req *http.Request) {
 type Request struct {
 	Url string
 	Prompt string
+	Agents []string
 }
 
 func processGithubUrlHandler (res http.ResponseWriter, req *http.Request) {
@@ -39,7 +40,7 @@ func processGithubUrlHandler (res http.ResponseWriter, req *http.Request) {
 		return;
 	}
 
-	services.McpClientConnector("review_code", services.CallLLM, request.Prompt)	
+	services.McpConnector(request.Agents, services.CallLLM, request.Prompt)	
 
 	// responseFromGithubService := services.FetchRepoInfo(request.Url);
 	// defer req.Body.Close();

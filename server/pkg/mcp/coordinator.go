@@ -2,7 +2,9 @@ package mcp
 
 import (
 	"context"
-	"log"
+	"fmt"
+
+	"github.com/hrpofficial736/uplift/server/internal/utils"
 )
 
 
@@ -15,42 +17,31 @@ func NewAgentCoordinator () *AgentCoordinator {
 }
 
 
-func (ac *AgentCoordinator) AddAgent (agentType string, callLLM func (string) (string, error), prompt string) {
-	transport := ac.transportManager.CreateTransport(agentType)
-	ctx, cancel := context.WithCancel(context.Background())
+func (ac *AgentCoordinator) AddAgent (agents []string, callLLM func (string) (utils.Response, error), prompt string) (interface{}, error) {
+		
+	for _, agentType := range agents {
+		transport := ac.transportManager.CreateTransport(agentType)
+		ctx, cancel := context.WithCancel(context.Background())
 
-	client := &AgentMCPClient{
-		agentType: agentType,
-		callLLM: callLLM,
-		transport: transport,
-		ctx: ctx,
-		cancel: cancel,
+		client := &AgentMCPClient{
+			agentType: agentType,
+			callLLM: callLLM,
+			transport: transport,
+			ctx: ctx,
+			cancel: cancel,
+		}
+
+		client.Initialize()
+
+		server := &AgentMCPServer{
+			serverId: agentType,
+			transport: transport,
+		}
+
+
+		ac.mcpClients[agentType] = client
+		ac.mcpServers[agentType] = server
 	}
 
-	client.Initialize()
-
-	server := &AgentMCPServer{
-		serverId: agentType,
-		transport: transport,
-	}
-
-
-	// server.RegisterTool("review_code", func(params map[string]interface{}) (interface{}, error) {
-	// 	code := params["code"].(string)
-
-	// 	return callLLM(code);
-	// })
-
-
-	ac.mcpClients[agentType] = client
-	ac.mcpServers[agentType] = server
-
-
-	text, err := ac.mcpClients[agentType].callLLM(prompt)
-
-	if err != nil {
-		log.Fatalf("error while prompting the model: %s\n", err)
-	}
-
-	log.Println(text)
+	return nil, fmt.Errorf("error aa rha h")
 } 

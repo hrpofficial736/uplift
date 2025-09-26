@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/hrpofficial736/uplift/server/internal/utils"
 )
 
-func NewAgentMCPClient (agentType string, callLLM func (string) (string, error)) *AgentMCPClient {
+func NewAgentMCPClient (agentType string, callLLM func (string) (utils.Response, error)) *AgentMCPClient {
 	ctx, cancel := context.WithCancel(context.Background());
 
 	return &AgentMCPClient{

@@ -4,7 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+
+	"github.com/hrpofficial736/uplift/server/internal/utils"
 )
+
+
+type CheckPointResponse struct {
+	Valid bool `json:"valid"`
+	Agents []string `json:"agents"`
+	Message string `json:"message"`
+}
 
 
 type InMemoryTransport struct {
@@ -44,7 +53,7 @@ type JSONRPCResponse struct {
 
 type AgentMCPClient struct {
 	agentType string
-	callLLM func (string) (string, error)
+	callLLM func (string) (utils.Response, error)
 	transport *InMemoryTransport
 	initialized bool
 	requestID int64
