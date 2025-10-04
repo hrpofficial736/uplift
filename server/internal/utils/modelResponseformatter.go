@@ -1,13 +1,13 @@
 package utils
 
-import "log"
+import (
+	"log"
 
-type Response struct {
-	Text      string
-	ToolCalls interface{}
-}
+	"github.com/hrpofficial736/uplift/server/internal/services/types"
+)
 
-func FormatModelResponse(result map[string]interface{}) Response {
+func FormatModelResponse(result map[string]interface{}) types.Response {
+
 	candidates, ok := result["candidates"].([]interface{})
 	if !ok || len(candidates) == 0 {
 		log.Fatal("No candidates returned!")
@@ -35,7 +35,7 @@ func FormatModelResponse(result map[string]interface{}) Response {
 		toolCalls = fc
 	}
 
-	return Response{
+	return types.Response{
 		Text:      text,
 		ToolCalls: toolCalls,
 	}

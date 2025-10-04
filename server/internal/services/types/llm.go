@@ -12,10 +12,7 @@ type LLMRequestBody struct {
 	Contents []Content `json:"contents"`
 }
 
-
-
-
-type LLMResponse struct {
-	Content string
-	ToolCall string
+type Response struct {
+	Text      string
+	ToolCalls interface{}
 }

@@ -5,20 +5,26 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hrpofficial736/uplift/server/internal/models"
+	"github.com/hrpofficial736/uplift/server/internal/services/types"
 	"github.com/hrpofficial736/uplift/server/internal/utils"
 	"github.com/hrpofficial736/uplift/server/pkg/mcp"
 )
 
-func McpConnector (agents []string, callLLM func (string) (utils.Response, error), prompt string) (interface{}, error) {
+func McpConnector (agents []string, callLLM func (string) (types.Response, error), prompt string) (interface{}, error) {
 	
-	var fResult mcp.CheckPointResponse
+	var fResult models.CheckPointResponse
 	result, err := mcp.CheckPoint(prompt, agents, callLLM)
+
+	
+	cleaned := utils.CleanLLMOutput(result.Text);
+	log.Println(cleaned)
 
 	if err != nil {
 		log.Fatalf("error occured on checkpoint: %s", err)
 	}
 
-	if err := json.Unmarshal([]byte(result.Text), &fResult); err != nil {
+	if err := json.Unmarshal([]byte(cleaned), &fResult); err != nil {
 		log.Fatalf("error occured on checkpoint as conversion to the response struct failed: %s", err)
 	}
 	
@@ -27,9 +33,10 @@ func McpConnector (agents []string, callLLM func (string) (utils.Response, error
 		fmt.Println("Agents to run: ", fResult.Agents)
 		newAc := mcp.NewAgentCoordinator()
 		fmt.Println("connector connected the handler to the mcp agent coordinator.")
-		return newAc.AddAgent(agents, callLLM, prompt)
+		return newAc.AddAgent(agents, callLLM, prompt, fResult.Url)
 		
 	} else {
+		fmt.Println("no need for mcp!")
 		return nil, fmt.Errorf("checkpoint failed: %s", fResult.Message)
 	}	
 }

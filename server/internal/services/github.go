@@ -9,15 +9,11 @@ import (
 	"github.com/hrpofficial736/uplift/server/internal/config"
 )
 
-
-
 type User struct {
-	Login string `json:"login"`
-	Name string `json:"name"`
-	PublicRepos int `json:"public_repos"`
+	Login       string `json:"login"`
+	Name        string `json:"name"`
+	PublicRepos int    `json:"public_repos"`
 }
-
-
 
 type Repo struct {
 	Name        string `json:"name"`
@@ -26,7 +22,6 @@ type Repo struct {
 	HTMLURL     string `json:"html_url"`
 }
 
-
 type Content struct {
 	Name        string `json:"name"`
 	Path        string `json:"path"`
@@ -34,28 +29,26 @@ type Content struct {
 	DownloadURL string `json:"download_url"`
 }
 
-
-func FetchRepoInfo (url string) []Content {
-	request, err := http.NewRequest("GET", url, nil);
-	if (err != nil) {
-		log.Fatal(err);
+func FetchRepoInfo(url string) []Content {
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	token := config.ConfigLoad().GithubAccessToken;
-	request.Header.Set("Authorization", "token " + token);
-	request.Header.Set("Accept", "application/vnd.github+json");
+	token := config.ConfigLoad().GithubAccessToken
+	request.Header.Set("Authorization", "token "+token)
+	request.Header.Set("Accept", "application/vnd.github+json")
 
-
-	client := &http.Client{};
-	response, err := client.Do(request);
+	client := &http.Client{}
+	response, err := client.Do(request)
 
 	if err != nil {
-		log.Fatal(response);
-		log.Fatalf("Error while making request: %s\n" , err);
+		log.Fatal(response)
+		log.Fatalf("Error while making request: %s\n", err)
 	}
 
-	fmt.Println(response);
-	defer response.Body.Close();
+	fmt.Println(response)
+	defer response.Body.Close()
 
 	// var user User;
 
@@ -63,9 +56,9 @@ func FetchRepoInfo (url string) []Content {
 	// 	log.Fatalf("Error while converting to json: %s\n",err);
 	// }
 
-var contents []Content;
+	var contents []Content
 	if err := json.NewDecoder(response.Body).Decode(&contents); err != nil {
 		log.Fatal(err)
 	}
-	return contents;
+	return contents
 }

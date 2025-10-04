@@ -12,9 +12,9 @@ import (
 	"github.com/hrpofficial736/uplift/server/internal/utils"
 )
 
-func CallLLM(prompt string) (utils.Response, error) {
+func CallLLM(prompt string) (types.Response, error) {
 	if prompt == "" {
-		return utils.Response{}, fmt.Errorf("invalid prompt")
+		return types.Response{}, fmt.Errorf("invalid prompt")
 	}
 
 	cfg := config.ConfigLoad()
@@ -38,23 +38,23 @@ func CallLLM(prompt string) (utils.Response, error) {
 
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return utils.Response{}, fmt.Errorf("failed to marshal body: %w", err)
+		return types.Response{}, fmt.Errorf("failed to marshal body: %w", err)
 	}
 
 	response, err := http.Post(requestUrl, "application/json", bytes.NewBuffer(jsonBody))
 	if err != nil {
-		return utils.Response{}, fmt.Errorf("http post failed: %w", err)
+		return types.Response{}, fmt.Errorf("http post failed: %w", err)
 	}
 	defer response.Body.Close()
 
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
-		return utils.Response{}, fmt.Errorf("read body failed: %w", err)
+		return types.Response{}, fmt.Errorf("read body failed: %w", err)
 	}
 
 	var result map[string]interface{}
 	if err := json.Unmarshal(data, &result); err != nil {
-		return utils.Response{}, fmt.Errorf("unmarshal failed: %w", err)
+		return types.Response{}, fmt.Errorf("unmarshal failed: %w", err)
 	}
 
 	return utils.FormatModelResponse(result), nil

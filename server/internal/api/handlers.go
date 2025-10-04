@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/hrpofficial736/uplift/server/internal/services"
-	// "github.com/hrpofficial736/uplift/server/internal/services"
 )
 
 
@@ -22,7 +21,6 @@ func handleApiRoute (res http.ResponseWriter, req *http.Request) {
 
 
 type Request struct {
-	Url string
 	Prompt string
 	Agents []string
 }

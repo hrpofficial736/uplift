@@ -1,47 +1,17 @@
 package mcp
 
 import (
-	"context"
-	"fmt"
-
-	"github.com/hrpofficial736/uplift/server/internal/utils"
+	mcpclient "github.com/hrpofficial736/uplift/server/internal/models/mcp-client"
+	mcpcoordinator "github.com/hrpofficial736/uplift/server/internal/models/mcp-coordinator"
+	mcpserver "github.com/hrpofficial736/uplift/server/internal/models/mcp-server"
 )
 
 
-func NewAgentCoordinator () *AgentCoordinator {
-	return &AgentCoordinator{
-		transportManager: NewTransportManager(),
-		mcpClients: make(map[string]*AgentMCPClient),
-		mcpServers: make(map[string]*AgentMCPServer),
+func NewAgentCoordinator () *mcpcoordinator.AgentCoordinator {
+	return &mcpcoordinator.AgentCoordinator{
+		TransportManager: NewTransportManager(),
+		McpClients: make(map[string]*mcpclient.AgentMCPClient),
+		McpServers: make(map[string]*mcpserver.AgentMCPServer),
 	}
 }
 
-
-func (ac *AgentCoordinator) AddAgent (agents []string, callLLM func (string) (utils.Response, error), prompt string) (interface{}, error) {
-		
-	for _, agentType := range agents {
-		transport := ac.transportManager.CreateTransport(agentType)
-		ctx, cancel := context.WithCancel(context.Background())
-
-		client := &AgentMCPClient{
-			agentType: agentType,
-			callLLM: callLLM,
-			transport: transport,
-			ctx: ctx,
-			cancel: cancel,
-		}
-
-		client.Initialize()
-
-		server := &AgentMCPServer{
-			serverId: agentType,
-			transport: transport,
-		}
-
-
-		ac.mcpClients[agentType] = client
-		ac.mcpServers[agentType] = server
-	}
-
-	return nil, fmt.Errorf("error aa rha h")
-} 
