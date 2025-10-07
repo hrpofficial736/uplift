@@ -1,4 +1,4 @@
-package utils
+package github
 
 import (
 	"encoding/json"
@@ -31,10 +31,8 @@ func CallGithubApi(path string, method string) (interface{}, error) {
 	}
 
 	var fResponse interface{}
-
-	if err := json.NewDecoder(response.Body).Decode(fResponse); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&fResponse); err != nil {
 		return nil, fmt.Errorf("error while converting json response into interface: %s", err)
 	}
-
 	return fResponse, nil
 }

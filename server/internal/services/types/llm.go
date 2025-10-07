@@ -4,7 +4,6 @@ type Part struct {
 	Text string `json:"text"`
 }
 
-
 type Content struct {
 	Parts []Part `json:"parts"`
 }
@@ -13,6 +12,6 @@ type LLMRequestBody struct {
 }
 
 type Response struct {
-	Text      string
-	ToolCalls interface{}
+	Text      string      `json:"text"`
+	ToolCalls interface{} `json:"toolCalls"`
 }
