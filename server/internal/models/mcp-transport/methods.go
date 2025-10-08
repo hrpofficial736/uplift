@@ -25,7 +25,6 @@ func (t *InMemoryTransport) Send(ctx context.Context, message map[string]interfa
 	}
 
 	t.Mu.RUnlock()
-	fmt.Println(message)
 	select {
 	case t.ClientChannel <- message:
 		return nil
@@ -50,7 +49,6 @@ func (t *InMemoryTransport) Receive(ctx context.Context) (interface{}, error) {
 		if err := json.Unmarshal(message.([]byte), &decoded); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal message: %s", err)
 		}
-		fmt.Printf("message before receiving in transport: %v\n\n\n\n\n", decoded)
 		return decoded, nil
 	case <-ctx.Done():
 		return nil, ctx.Err()

@@ -51,7 +51,6 @@ func processGithubUrlHandler(res http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(res).Encode(serverResponse)
 		return
 	}
-	fmt.Println(response)
 	serverResponse := &Response{
 		Status:  200,
 		Message: "Fetched response successfully!",

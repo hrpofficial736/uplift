@@ -30,7 +30,6 @@ func MaintainabilityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.A
 	if err != nil {
 		return nil, fmt.Errorf("error in maintainability critic while receiving from the server: %s", err)
 	}
-	fmt.Printf("\n\n\n\n\nresponse from mcp server in maintainability agent: %v\n", response)
 
 	llmResponse, err := callLLM(utils.GetMaintainabilitySystemPrompt(owner, repo, response))
 

@@ -13,7 +13,7 @@ import (
 func Mentor(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCPServer, owner string, repo string, callLLM func(string) (types.Response, error), ctx context.Context, responses []interface{}) (interface{}, error) {
 	fmt.Println("in mentor agent...")
 
-	llmResponse, err := callLLM(utils.GetSecuritySystemPrompt(owner, repo, responses))
+	llmResponse, err := callLLM(utils.GetMentorSystemPrompt(owner, repo, responses))
 
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the mentor data: %s", err)

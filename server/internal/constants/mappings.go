@@ -11,10 +11,10 @@ import (
 )
 
 var AgentTypeToFunctionMapping = map[string]func(*mcpclient.AgentMCPClient, *mcpserver.AgentMCPServer, string, string, func(string) (types.Response, error), context.Context, []interface{}) (interface{}, error){
-	"security":    agents.SecurityCritic,
-	"performance": agents.MaintainabilityCritic,
-	"quality":     agents.QualityCritic,
-	"mentor":      agents.Mentor,
+	"security":        agents.SecurityCritic,
+	"maintainability": agents.MaintainabilityCritic,
+	"quality":         agents.QualityCritic,
+	"mentor":          agents.Mentor,
 }
 
 var ServerToToolsMapping = map[string]func(string, string) ([]interface{}, error){

@@ -34,13 +34,11 @@ func (s *AgentMCPServer) Start(ctx context.Context) {
 				if err := json.Unmarshal(reqJSON, &req); err != nil {
 					log.Fatalf("error in mcp server while unmarshalling the json to the json rpc request: %s", err)
 				}
-				fmt.Printf("request recived from the client: %v\n", req)
 				if handler, ok := s.Tools[req.Method]; ok {
 					result, err := handler(req.Params["owner"], req.Params["repo"])
 					if err != nil {
 						log.Fatalf("error while tool calling in mcp server: %s", err)
 					}
-					fmt.Println(result)
 					var response jsonrpctypes.JSONRPCResponse
 					response.JSONRPC = "2.0"
 					response.ID = req.ID

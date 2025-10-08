@@ -30,7 +30,6 @@ func SecurityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCP
 	if err != nil {
 		return nil, fmt.Errorf("error in security critic while receiving from the server: %s", err)
 	}
-	fmt.Printf("\n\n\n\n\nresponse from mcp server in security agent: %v\n", response)
 
 	llmResponse, err := callLLM(utils.GetSecuritySystemPrompt(owner, repo, response))
 

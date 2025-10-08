@@ -27,6 +27,5 @@ func CheckRepoSecurity(owner string, repo string) ([]interface{}, error) {
 	}
 
 	responses := []interface{}{dependabotAlertsResponse, codeScanningAlertsResponse, secretScanningAlertsResponse}
-	fmt.Printf("security responses in services: %v", responses)
 	return responses, nil
 }

@@ -49,8 +49,9 @@ func (ac *AgentCoordinator) AddAgentAndGetAgentResponse(agents []string, callLLM
 			return nil, fmt.Errorf("error occured in the %s agent: %s", agentType, err)
 		}
 		responses = append(responses, response)
+		transport.Close()
+		cancel()
 	}
-
-	fmt.Println(responses)
+	ac.TransportManager.CloseAll()
 	return responses, nil
 }
