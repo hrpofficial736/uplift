@@ -1,15 +1,17 @@
-export default async function requestServer(
-  url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE",
-  headers: {},
-  body: BodyInit
-): Promise<{}> {
-    const response = await fetch(url, {
-        method,
-        headers,
-        body
-    })
+type WrapperParams = {
+  method: "GET" | "POST" | "PUT" | "DELETE";
+  path: string;
+  body: BodyInit;
+};
 
-    const data = await response.json();
-    return data;
+export default async function callAPI(params: WrapperParams): Promise<object> {
+  const response = await fetch(import.meta.env.VITE_SERVER_URL, {
+    method: params.method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: params.body,
+  });
+  const data: object = await response.json();
+  return data;
 }
