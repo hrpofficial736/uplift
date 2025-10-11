@@ -13,10 +13,10 @@ func main() {
 	formattedPort := ":" + cfg.Port
 
 	mux := http.NewServeMux()
-
 	api.RegisterRouter(mux)
+	handler := api.MiddleWare(mux)
 
 	log.Printf("server is listening at %s...\n", cfg.Port)
-	log.Fatal(http.ListenAndServe(formattedPort, mux))
+	log.Fatal(http.ListenAndServe(formattedPort, handler))
 
 }

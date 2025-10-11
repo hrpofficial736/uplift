@@ -4,14 +4,47 @@ type WrapperParams = {
   body: BodyInit;
 };
 
-export default async function callAPI(params: WrapperParams): Promise<object> {
-  const response = await fetch(import.meta.env.VITE_SERVER_URL, {
-    method: params.method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: params.body,
-  });
-  const data: object = await response.json();
-  return data;
+type Response = {
+  status: number;
+  message: string;
+  data: {
+    text: string;
+    toolCalls: null;
+  }[];
+  repoInfo: {
+    ownerName: string;
+    repoName: string;
+  };
+  reviewed: boolean;
+};
+
+export default async function callAPI(
+  params: WrapperParams,
+): Promise<Response> {
+  try {
+    const response = await fetch(
+      import.meta.env.VITE_SERVER_URL + params.path,
+      {
+        method: params.method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: params.body,
+      },
+    );
+    const data: Response = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return {
+      status: 500,
+      message: "",
+      data: [],
+      repoInfo: {
+        repoName: "",
+        ownerName: "",
+      },
+      reviewed: false,
+    };
+  }
 }

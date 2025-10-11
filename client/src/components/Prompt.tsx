@@ -4,6 +4,9 @@ import { LuLoader } from "react-icons/lu";
 import { FaAngleDown } from "react-icons/fa";
 import { MdCheckBoxOutlineBlank } from "react-icons/md";
 import { motion, AnimatePresence } from "motion/react";
+import callAPI from "../helpers/fetchWrapper";
+import { useNavigate } from "react-router-dom";
+import type { ReviewPageProps } from "./ReviewPage";
 
 type AvailableAgents = {
   security: boolean;
@@ -12,31 +15,117 @@ type AvailableAgents = {
   mentor: boolean;
 };
 
-const Prompt = () => {
+const Prompt = ({
+  callback,
+}: {
+  callback: (info: ReviewPageProps) => void;
+}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [openDropDown, setOpenDropDown] = useState<boolean>(false);
+  const [prompt, setPrompt] = useState<string>("");
   const [selectedAgents, setSelectedAgents] = useState<AvailableAgents>({
     security: true,
     maintainability: true,
     quality: true,
     mentor: true,
   });
+
+  const [showHeader, setShowHeader] = useState<boolean>(true);
+  const [messages, setMessages] = useState<string[]>([]);
+
+  const navigate = useNavigate();
+
+  const submitPrompt = async () => {
+    setPrompt("");
+    const agents = Object.entries(selectedAgents)
+      .filter(([, value]) => value === true)
+      .map(([key]) => key);
+    console.log(agents);
+    const data = await callAPI({
+      method: "POST",
+      path: "/api/github/",
+      body: JSON.stringify({
+        prompt: prompt,
+        agents: agents,
+      }),
+    });
+
+    if (data.status === 200 && !data.reviewed) {
+      setShowHeader(false);
+      setMessages((prevData) => [...prevData, data.message]);
+      setLoading(false);
+
+      return;
+    } else if (data.status === 200 && data.reviewed) {
+      setLoading(false);
+      let reviewInfo: ReviewPageProps = {
+        security: "",
+        maintainability: "",
+        quality: "",
+        mentor: "",
+        repoName: data.repoInfo.repoName,
+        ownerName: data.repoInfo.ownerName,
+      };
+      const sections = Object.keys(reviewInfo);
+      data.data.map((section, index) => {
+        reviewInfo = {
+          ...reviewInfo,
+          [sections[index]]: section.text,
+        };
+      });
+      callback(reviewInfo);
+      navigate("/review");
+      return;
+    } else {
+      setLoading(false);
+      return;
+    }
+  };
   return (
     <div className="w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold flex flex-col justify-center items-center">
-      <h1 className="text-white/80 font-[500] text-4xl">
-        Let's improve your project...
-      </h1>
+      {!showHeader ? (
+        <div className="flex flex-col items-start w-[1000px] gap-3">
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{
+                y: 50,
+                opacity: 0,
+              }}
+              animate={{
+                y: 0,
+                opacity: 1,
+              }}
+              transition={{
+                duration: 0.3,
+                type: "tween",
+              }}
+              className={`rounded-xl px-5 py-3 bg-zinc-900 font-[500] max-w-[500px] self-start text-white/70`}
+            >
+              {message}
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <h1 className="text-white/80 font-[500] text-4xl">
+            Let's improve your project...
+          </h1>
 
-      <p className="text-white/50 w-[50%] mt-3 text-center font-[400] ">
-        Your project deserves honest feedback — Uplift’s AI reviewers analyze
-        your project’s security, maintainability, and quality, while a mentor
-        turns their criticism into a growth plan you’ll actually enjoy
-        following.
-      </p>
+          <p className="text-white/50 w-[50%] mt-3 text-center font-[400] ">
+            Your project deserves honest feedback — Uplift’s AI reviewers
+            analyze your project’s security, maintainability, and quality, while
+            a mentor turns their criticism into a growth plan you’ll actually
+            enjoy following.
+          </p>
+        </>
+      )}
 
       <div className="flex justify-center gap-3 mt-7 relative">
         <input
-          type="url"
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
           className="pl-7 pt-3 pb-20 w-[1000px] font-[500] bg-zinc-900 focus:outline-none text-white/80  placeholder:text-white/50 border-2 border-white/20 rounded-xl"
           placeholder="Enter the prompt with the github url of your project..."
         />
@@ -138,7 +227,10 @@ const Prompt = () => {
         </AnimatePresence>
 
         <button
-          onClick={() => setLoading(!loading)}
+          onClick={() => {
+            setLoading(true);
+            submitPrompt();
+          }}
           className={`rounded-4xl cursor-pointer absolute top-3 right-3 transition-all duration-200 font-[600] flex justify-center items-center gap-3 ${
             loading
               ? "bg-white/5 text-white/60"

@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hrpofficial736/uplift/server/internal/models"
 	"github.com/hrpofficial736/uplift/server/internal/services"
 )
 
 func handleApiRoute(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	res.Header().Set("Content-Type", "application/json")
 	if req.Method != http.MethodGet {
 		res.WriteHeader(401)
 		return
@@ -17,45 +20,31 @@ func handleApiRoute(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(res, "Welcome to the API route!")
 }
 
-type Request struct {
-	Prompt string
-	Agents []string
-}
-
-type Response struct {
-	Status  int         `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
 func processGithubUrlHandler(res http.ResponseWriter, req *http.Request) {
+	fmt.Println(req.Method)
 	if req.Method != http.MethodPost {
 		res.WriteHeader(401)
 		return
 	}
-	res.Header().Set("Content-Type", "application/json")
 
 	fmt.Println("in the github handler...")
-	var request Request
+	var request models.Request
 
 	if err := json.NewDecoder(req.Body).Decode(&request); err != nil {
 		http.Error(res, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
+	fmt.Println(len(request.Agents))
 	response, err := services.McpConnector(request.Agents, services.CallLLM, request.Prompt)
 	if err != nil {
-		serverResponse := &Response{
+		serverResponseWithErr := &models.Response{
 			Message: err.Error(),
 		}
-		json.NewEncoder(res).Encode(serverResponse)
+		json.NewEncoder(res).Encode(serverResponseWithErr)
 		return
 	}
-	serverResponse := &Response{
-		Status:  200,
-		Message: "Fetched response successfully!",
-		Data:    response,
-	}
 	res.WriteHeader(200)
-	json.NewEncoder(res).Encode(serverResponse)
+	fmt.Println("server response before sending to the client")
+	json.NewEncoder(res).Encode(response)
 }

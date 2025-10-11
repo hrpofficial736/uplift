@@ -30,10 +30,25 @@ func McpConnector(agents []string, callLLM func(string) (types.Response, error),
 		fmt.Println("Agents to run: ", fResult.Agents)
 		newAc := mcp.NewAgentCoordinator()
 		fmt.Println("connector connected the handler to the mcp agent coordinator.")
-		return newAc.AddAgentAndGetAgentResponse(agents, callLLM, prompt, fResult.Url)
+		response, repoInfo, err := newAc.AddAgentAndGetAgentResponse(agents, callLLM, prompt, fResult.Url)
+		if err != nil {
+			return nil, fmt.Errorf("error in mcp connector while calling agent coordinator: %s", err)
+		}
 
+		return &models.Response{
+			Status:   200,
+			Message:  fResult.Message,
+			Data:     response,
+			Reviewed: true,
+			RepoInfo: repoInfo,
+		}, nil
 	} else {
 		fmt.Println("no need for mcp!")
-		return nil, fmt.Errorf("%s", fResult.Message)
+		return &models.Response{
+			Status:   200,
+			Message:  fResult.Message,
+			Data:     nil,
+			Reviewed: false,
+		}, nil
 	}
 }

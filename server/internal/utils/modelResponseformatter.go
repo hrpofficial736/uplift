@@ -1,13 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hrpofficial736/uplift/server/internal/services/types"
 )
 
 func FormatModelResponse(result map[string]interface{}) types.Response {
-
+	fmt.Println(result)
 	candidates, ok := result["candidates"].([]interface{})
 	if !ok || len(candidates) == 0 {
 		log.Fatal("No candidates returned!")

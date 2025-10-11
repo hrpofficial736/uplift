@@ -10,6 +10,7 @@ import (
 )
 
 func (s *AgentMCPServer) RegisterTool(name string, handler func(string, string) ([]interface{}, error)) {
+	fmt.Println("in register tool handler")
 	if s.Tools == nil {
 		s.Tools = make(map[string]func(string, string) ([]interface{}, error))
 	}
