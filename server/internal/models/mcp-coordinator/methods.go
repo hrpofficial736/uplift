@@ -2,8 +2,10 @@ package mcpcoordinator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/hrpofficial736/uplift/server/internal/constants"
 	mcpclient "github.com/hrpofficial736/uplift/server/internal/models/mcp-client"
@@ -13,7 +15,7 @@ import (
 )
 
 func (ac *AgentCoordinator) AddAgentAndGetAgentResponse(agents []string, callLLM func(string) (types.Response, error), prompt string, url string) ([]interface{}, interface{}, error) {
-	fmt.Println("inside the coordinator with")
+	fmt.Println("inside the coordinator")
 	info := strings.Split(url, "/")
 	fmt.Println(info)
 	path := fmt.Sprintf("/repos/%s/%s", info[3], info[4])
@@ -23,41 +25,75 @@ func (ac *AgentCoordinator) AddAgentAndGetAgentResponse(agents []string, callLLM
 		return nil, nil, fmt.Errorf("error in coordinator while calling github api: %s", err)
 	}
 
-	var responses []interface{}
-	fmt.Println(len(agents))
+	var (
+		wg               sync.WaitGroup
+		mu               sync.Mutex
+		responses        []interface{}
+		responsesChannel = make(chan interface{}, len(agents))
+		errorChannel     = make(chan error, len(agents))
+	)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	for _, agentType := range agents {
-		transport := ac.TransportManager.CreateTransport(agentType)
-		ctx, cancel := context.WithCancel(context.Background())
+		wg.Add(1)
+		go func(agentType string) {
+			defer wg.Done()
 
-		client := &mcpclient.AgentMCPClient{
-			AgentType: agentType,
-			CallLLM:   callLLM,
-			Transport: transport,
-			Ctx:       ctx,
-			Cancel:    cancel,
-		}
+			agentCtx, agentCancel := context.WithCancel(ctx)
+			defer agentCancel()
+			transport := ac.TransportManager.CreateTransport(agentType)
 
-		server := &mcpserver.AgentMCPServer{
-			ServerId:  agentType,
-			Transport: transport,
-		}
+			client := &mcpclient.AgentMCPClient{
+				AgentType: agentType,
+				CallLLM:   callLLM,
+				Transport: transport,
+				Ctx:       agentCtx,
+				Cancel:    agentCancel,
+			}
 
-		ac.McpClients[agentType] = client
-		ac.McpServers[agentType] = server
-		fmt.Println("assigned client and server, now about to register tools on the server!")
-		server.RegisterTool(agentType, constants.ServerToToolsMapping[agentType])
-		fmt.Println("registered tool on server")
-		server.Start(ctx)
-		response, err := constants.AgentTypeToFunctionMapping[agentType](client, server, info[3], info[4], callLLM, ctx, responses)
+			server := &mcpserver.AgentMCPServer{
+				ServerId:  agentType,
+				Transport: transport,
+			}
+			mu.Lock()
+			ac.McpClients[agentType] = client
+			ac.McpServers[agentType] = server
+			mu.Unlock()
+			fmt.Println("assigned client and server, now about to register tools on the server!")
+			server.RegisterTool(agentType, constants.ServerToToolsMapping[agentType])
+			fmt.Println("registered tool on server")
+			server.Start(agentCtx)
+			response, err := constants.AgentTypeToFunctionMapping[agentType](client, server, info[3], info[4], callLLM, agentCtx, responses)
 
-		if err != nil {
-			return nil, nil, fmt.Errorf("error occured in the %s agent: %s", agentType, err)
-		}
+			if err != nil {
+				errorChannel <- fmt.Errorf("error while calling agents: %s", err)
+				cancel()
+				return
+			}
+			responsesChannel <- response
+			transport.Close()
+		}(agentType)
+	}
+
+	wg.Wait()
+	close(responsesChannel)
+	close(errorChannel)
+
+	for response := range responsesChannel {
 		responses = append(responses, response)
-		transport.Close()
-		cancel()
+	}
+
+	var combinedErr error
+	for err := range errorChannel {
+		combinedErr = errors.Join(combinedErr, err)
 	}
 	ac.TransportManager.CloseAll()
+
+	if combinedErr != nil {
+		return nil, nil, combinedErr
+	}
 	return responses, map[string]string{
 		"ownerName": info[3],
 		"repoName":  info[4],

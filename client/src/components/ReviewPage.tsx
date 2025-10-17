@@ -30,11 +30,10 @@ export default function ReviewPage({ props }: { props: ReviewPageProps }) {
               y: 50,
               opacity: 0,
             }}
-            whileInView={{
+            animate={{
               y: 0,
               opacity: 1,
             }}
-            viewport={{ once: true, amount: 0.2 }}
             transition={{
               duration: 0.5,
               type: "tween",
@@ -61,11 +60,10 @@ export default function ReviewPage({ props }: { props: ReviewPageProps }) {
               y: 50,
               opacity: 0,
             }}
-            whileInView={{
+            animate={{
               y: 0,
               opacity: 1,
             }}
-            viewport={{ once: true, amount: 0.2 }}
             transition={{
               duration: 0.5,
               type: "tween",
@@ -92,11 +90,10 @@ export default function ReviewPage({ props }: { props: ReviewPageProps }) {
               y: 50,
               opacity: 0,
             }}
-            whileInView={{
+            animate={{
               y: 0,
               opacity: 1,
             }}
-            viewport={{ once: true, amount: 0.2 }}
             transition={{
               duration: 0.5,
               type: "tween",
@@ -123,11 +120,10 @@ export default function ReviewPage({ props }: { props: ReviewPageProps }) {
               y: 50,
               opacity: 0,
             }}
-            whileInView={{
+            animate={{
               y: 0,
               opacity: 1,
             }}
-            viewport={{ once: true, amount: 0.2 }}
             transition={{
               duration: 0.5,
               type: "tween",

@@ -18,5 +18,8 @@ func Mentor(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCPServer, 
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the mentor data: %s", err)
 	}
-	return llmResponse, nil
+	return types.AgentResponse{
+		Data:  llmResponse,
+		Agent: "mentor",
+	}, nil
 }

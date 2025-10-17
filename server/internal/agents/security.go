@@ -36,5 +36,8 @@ func SecurityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCP
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the security data: %s", err)
 	}
-	return llmResponse, nil
+	return types.AgentResponse{
+		Data:  llmResponse,
+		Agent: "security",
+	}, nil
 }

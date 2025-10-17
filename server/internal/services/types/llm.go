@@ -15,3 +15,8 @@ type Response struct {
 	Text      string      `json:"text"`
 	ToolCalls interface{} `json:"toolCalls"`
 }
+
+type AgentResponse struct {
+	Data  Response `json:"data"`
+	Agent string   `json:"agent,omitempty"`
+}

@@ -36,5 +36,8 @@ func QualityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCPS
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the quality data: %s", err)
 	}
-	return llmResponse, nil
+	return types.AgentResponse{
+		Data:  llmResponse,
+		Agent: "quality",
+	}, nil
 }

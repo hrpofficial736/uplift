@@ -36,5 +36,8 @@ func MaintainabilityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.A
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the maintainability data: %s", err)
 	}
-	return llmResponse, nil
+	return types.AgentResponse{
+		Data:  llmResponse,
+		Agent: "maintainability",
+	}, nil
 }

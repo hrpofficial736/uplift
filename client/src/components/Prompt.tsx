@@ -54,7 +54,6 @@ const Prompt = ({
       setShowHeader(false);
       setMessages((prevData) => [...prevData, data.message]);
       setLoading(false);
-
       return;
     } else if (data.status === 200 && data.reviewed) {
       setLoading(false);
@@ -66,13 +65,14 @@ const Prompt = ({
         repoName: data.repoInfo.repoName,
         ownerName: data.repoInfo.ownerName,
       };
-      const sections = Object.keys(reviewInfo);
-      data.data.map((section, index) => {
+      console.log("data is: ", data.data);
+      data.data.map((section) => {
         reviewInfo = {
           ...reviewInfo,
-          [sections[index]]: section.text,
+          [section.agent]: section.data.text,
         };
       });
+      console.log(reviewInfo);
       callback(reviewInfo);
       navigate("/review");
       return;
@@ -108,7 +108,7 @@ const Prompt = ({
         </div>
       ) : (
         <>
-          <h1 className="text-white/80 font-[500] text-4xl">
+          <h1 className="bg-gradient-to-r from-rose-500 via-red-400 to-purple-500 bg-clip-text text-transparent font-[500] text-4xl">
             Let's improve your project...
           </h1>
 
@@ -231,14 +231,12 @@ const Prompt = ({
             setLoading(true);
             submitPrompt();
           }}
-          className={`rounded-4xl cursor-pointer absolute top-3 right-3 transition-all duration-200 font-[600] flex justify-center items-center gap-3 ${
-            loading
-              ? "bg-white/5 text-white/60"
-              : "bg-indigo-700 hover:bg-indigo-600 text-white/80"
-          } px-7 py-3`}
+          className={`rounded-lg cursor-pointer absolute top-3 right-3 transition-all duration-200 font-[600] flex justify-center items-center gap-3 ${
+            loading ? "bg-white/5 text-white/60" : "bg-indigo-600 text-white/80"
+          } px-4 py-3`}
         >
           {loading ? <LuLoader className="animate-spin" /> : <FaSearch />}
-          {loading ? "Getting your repo..." : "Review"}
+          {loading ? "Getting your repo..." : ""}
         </button>
       </div>
     </div>

@@ -1,8 +1,10 @@
 import { Route, Routes } from "react-router-dom";
-import Logo from "./components/Logo";
 import Prompt from "./components/Prompt";
 import ReviewPage, { type ReviewPageProps } from "./components/ReviewPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Header } from "./components/Header";
+import { supabaseClient } from "./lib/supabaseClient";
+import toast, { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [info, setInfo] = useState<ReviewPageProps>({
@@ -17,18 +19,40 @@ const App = () => {
   const setReviewInfo = (incomingInfo: ReviewPageProps) => {
     setInfo(incomingInfo);
   };
+
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) {
+        toast.error("Please sign in first!");
+        return;
+      }
+      if (data.session) {
+        setAuthenticated(true);
+      }
+    };
+    fetchSession();
+  }, []);
   return (
     <Routes>
       <Route
         path="/"
         element={
           <div className="p-5 h-screen w-screen relative bg-black text-white font-rubik overflow-hidden">
-            <Logo />
+            <Header authenticated={authenticated} />
             <Prompt callback={setReviewInfo} />
           </div>
         }
       />
       <Route path="/review" element={<ReviewPage props={info} />} />
+      <Toaster
+        containerStyle={{
+          backgroundColor: "black",
+          color: "white",
+        }}
+      />
     </Routes>
   );
 };

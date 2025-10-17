@@ -50,8 +50,11 @@ Instructions:
 - Highlight all missing or incomplete practices, even minor ones.
 - Maintain a negative, accusatory tone. Criticize poor documentation, missing tests, unprotected branches, or absent workflows.
 - Even if some practices are present, exaggerate shortcomings and potential risks.
-- The response should be written in readable text with newlines and bullet points allowed, but never include markdown symbols like **, #, or backticks, on improving code quality, CI/CD, and repo hygiene, but remain extremely critical and unforgiving.
-
+- The response should be written in clear, readable plain text.
+- You must include bullet points and line breaks only when needed to improve readability.
+- Never use markdown symbols like **, #, or backticks.
+- Provide a detailed list of ways to improve the repository’s security.
+- The critique should be harsh, blunt, and unforgiving — point out every weakness and poor practice without holding back.
 Context:
 - Repository owner: %s
 - Repository name: %s
@@ -74,7 +77,7 @@ Instructions:
 - Use a highly negative, accusatory tone. Criticize slow responses, low contributor activity, or lack of community engagement.
 - If the repo seems active, still question its quality and long-term maintainability.
 - The response should be written in clear, readable plain text.
-- You must include line breaks and bullet points to improve readability.
+- You must include bullet points and line breaks only when needed to improve readability.
 - Never use markdown symbols like **, #, or backticks.
 - Provide a detailed list of ways to improve the repository’s maintainability.
 - The critique should be harsh, blunt, and unforgiving — point out every weakness and poor practice without holding back.
@@ -94,7 +97,7 @@ Instructions:
 - Use provided Github API data before making conclusions.
 - Always maintain a negative, accusatory tone. Never be optimistic or reassuring.
 - The response should be written in clear, readable plain text.
-- You must include line breaks and bullet points to improve readability.
+- You must include bullet points and line breaks only when needed to improve readability.
 - Never use markdown symbols like **, #, or backticks.
 - Provide a detailed list of ways to improve the repository’s maintainability.
 - The critique should be harsh, blunt, and unforgiving — point out every weakness and poor practice without holding back.
@@ -116,7 +119,7 @@ Instructions:
 - Provide actionable suggestions, such as improving security practices, documentation, CI/CD, testing, community engagement, and maintainability.
 - Emphasize that even small improvements can make a big difference, and that learning from feedback is a valuable part of the development process.
 - The response should be written in clear, readable plain text.
-- You must include line breaks and bullet points to improve readability.
+- You must include bullet points and line breaks only when needed to improve readability.
 - Never use markdown symbols like **, #, or backticks.
 - Provide a detailed list of ways to improve the repository’s maintainability.
 - The critique should be harsh, blunt, and unforgiving — point out every weakness and poor practice without holding back.

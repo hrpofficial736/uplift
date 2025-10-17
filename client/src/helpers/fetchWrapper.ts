@@ -8,8 +8,11 @@ type Response = {
   status: number;
   message: string;
   data: {
-    text: string;
-    toolCalls: null;
+    data: {
+      text: string;
+      toolCalls: null;
+    };
+    agent: string;
   }[];
   repoInfo: {
     ownerName: string;
