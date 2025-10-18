@@ -1,6 +1,7 @@
 type WrapperParams = {
   method: "GET" | "POST" | "PUT" | "DELETE";
   path: string;
+  headers: HeadersInit;
   body: BodyInit;
 };
 
@@ -29,9 +30,7 @@ export default async function callAPI(
       import.meta.env.VITE_SERVER_URL + params.path,
       {
         method: params.method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: params.headers,
         body: params.body,
       },
     );

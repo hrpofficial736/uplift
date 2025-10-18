@@ -44,6 +44,9 @@ const Prompt = ({
     const data = await callAPI({
       method: "POST",
       path: "/api/github/",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         prompt: prompt,
         agents: agents,
