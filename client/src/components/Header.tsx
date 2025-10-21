@@ -2,7 +2,6 @@ import toast from "react-hot-toast/headless";
 import { supabaseClient } from "../lib/supabaseClient";
 import Logo from "./Logo";
 import type { Session } from "@supabase/supabase-js";
-import callAPI from "../helpers/fetchWrapper";
 
 export const Header = ({
   authenticated,
@@ -17,7 +16,7 @@ export const Header = ({
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "/",
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
           access_type: "offline",
           prompt: "consent",
@@ -29,24 +28,6 @@ export const Header = ({
       toast.error("Error signing you in");
       return;
     }
-
-    const responseFromServer = await callAPI({
-      path: "/api/auth",
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: session?.user.email,
-      }),
-    });
-
-    if (responseFromServer.status !== 200) {
-      toast.error("Error signing you in...");
-      return;
-    }
-    toast.success("Signed in successfully");
   };
 
   return (

@@ -19,3 +19,13 @@ type Response struct {
 	RepoInfo interface{} `json:"repoInfo"`
 	Reviewed bool        `json:"reviewed"`
 }
+
+type User struct {
+	Id               string `json:"id"`
+	Name             string `json:"name"`
+	Email            string `json:"email"`
+	Plan             string `json:"plan"`
+	Prompts          int    `json:"prompts"`
+	Plan_upgraded_at string `json:"plan_upgraded_at"`
+	CreatedAt        string `json:"created_at"`
+}

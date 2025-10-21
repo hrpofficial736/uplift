@@ -4,6 +4,7 @@ import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
 import { AppLayout } from "./components/AppLayout";
 import Prompt from "./components/Prompt";
 import ReviewPage, { type ReviewPageProps } from "./components/ReviewPage";
+import { Callback } from "./components/Callback";
 
 const App = () => {
   const [info, setInfo] = useState<ReviewPageProps>({
@@ -28,6 +29,7 @@ const App = () => {
         }
       />
       <Route path="/review" element={<ReviewPage props={info} />} />
+      <Route path="/auth/callback" element={<Callback />} />
     </Routes>
   );
 };

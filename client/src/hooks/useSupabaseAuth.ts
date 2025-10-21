@@ -27,6 +27,7 @@ export const useSupabaseAuth = () => {
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+      console.log(_event);
       if (!session) {
         toast.error("Error signing you in...");
         setAuthenticated(false);
@@ -35,7 +36,6 @@ export const useSupabaseAuth = () => {
       history.replaceState(null, "", window.location.pathname);
       if (handled) return;
       handled = true;
-      toast.success("Signed back successfully");
       setAuthenticated(true);
       setSession(session);
     });

@@ -15,6 +15,9 @@ type Config struct {
 	GeminiModel       string
 	GeminiAPIKey      string
 	ClientUrl         string
+	DatabaseUrl       string
+	SupabaseJWTSecret string
+	StripeSecretKey   string
 }
 
 func ConfigLoad() *Config {
@@ -31,6 +34,9 @@ func ConfigLoad() *Config {
 		GeminiModel:       getEnv("GEMINI_MODEL", "gemini-2.0-flash"),
 		GeminiAPIKey:      getEnv("GEMINI_API_KEY", "gemini_api_key"),
 		ClientUrl:         getEnv("CLIENT_URL", "client_url"),
+		DatabaseUrl:       getEnv("DATABASE_URL", "database_url"),
+		SupabaseJWTSecret: getEnv("SUPABASE_JWT_SECRET", "jwt_secret"),
+		StripeSecretKey:   getEnv("STRIPE_SECRET_KEY", "stripe_secret_key"),
 	}
 	log.Println("Config loaded!")
 	return cfg
