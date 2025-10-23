@@ -12,7 +12,10 @@ export const Callback = () => {
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        navigate("/");
+        return;
+      }
       const responseFromServer = await callAPI({
         path: "/api/auth",
         method: "POST",
