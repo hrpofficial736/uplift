@@ -2,6 +2,7 @@ import { FaGithub } from "react-icons/fa6";
 import Logo from "./Logo";
 import { motion } from "motion/react";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 
 export type ReviewPageProps = {
   security?: string;
@@ -13,6 +14,8 @@ export type ReviewPageProps = {
 };
 
 export default function ReviewPage({ props }: { props: ReviewPageProps }) {
+  const navigate = useNavigate();
+  if (!props.repoName || !props.ownerName) navigate("/");
   return (
     <div className="w-screen flex flex-col px-10 py-7 bg-black text-white font-rubik">
       {/*Header*/}
