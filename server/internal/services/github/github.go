@@ -9,7 +9,7 @@ import (
 )
 
 func CallGithubApi(path string, method string) (interface{}, error) {
-	cfg := config.ConfigLoad()
+	cfg := config.Cfg
 	githubBaseUrl := cfg.GithubBaseUrl
 	token := cfg.GithubAccessToken
 	requestUrl := fmt.Sprintf("%s%s", githubBaseUrl, path)

@@ -7,14 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 export const Callback = () => {
   const navigate = useNavigate();
-  console.log("on callback page");
   useEffect(() => {
     const checkSession = async () => {
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
       if (!session) return;
-      console.log(session.user.user_metadata["full_name"]);
       const responseFromServer = await callAPI({
         path: "/api/auth",
         method: "POST",
@@ -28,7 +26,6 @@ export const Callback = () => {
         }),
       });
 
-      console.log(responseFromServer);
       if (responseFromServer.status !== 200) {
         toast.error("Error signing you in...");
         return;

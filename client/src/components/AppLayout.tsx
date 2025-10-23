@@ -21,11 +21,7 @@ export const AppLayout = ({
 
   return (
     <div className="p-5 h-screen w-screen relative bg-black text-white font-rubik overflow-hidden">
-      <Header
-        callback={handleSettingsToggle}
-        session={session}
-        authenticated={authenticated}
-      />
+      <Header callback={handleSettingsToggle} authenticated={authenticated} />
       <Toaster
         toastOptions={{
           style: {
@@ -34,7 +30,13 @@ export const AppLayout = ({
           },
         }}
       />
-      <Settings show={openSettings} onClose={() => setOpenSettings(false)} />
+      {session && (
+        <Settings
+          session={session!}
+          show={openSettings}
+          onClose={() => setOpenSettings(false)}
+        />
+      )}
       {children}
     </div>
   );

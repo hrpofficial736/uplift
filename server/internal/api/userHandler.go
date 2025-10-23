@@ -23,6 +23,48 @@ type UpdateResponse struct {
 	Data    models.User `json:"data"`
 }
 
+func getUserInfo(pool *pgxpool.Pool) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		if req.Method != http.MethodPost {
+			http.Error(res, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var requestBody map[string]string
+		if err := json.NewDecoder(req.Body).Decode(&requestBody); err != nil {
+			http.Error(res, "invalid request body", http.StatusBadRequest)
+			return
+		}
+		rows, err := database.QueryDatabase(context.Background(), pool,
+			`SELECT id, name, email, plan, prompts, plan_upgraded_at, created_at FROM "Users" WHERE email = $1`, requestBody["email"])
+		if err != nil {
+			http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var users []models.User
+
+		for rows.Next() {
+			var user models.User
+			err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Plan, &user.Prompts, &user.Plan_upgraded_at, &user.CreatedAt)
+			if err != nil {
+				http.Error(res, fmt.Sprintf("scan error: %v", err), http.StatusInternalServerError)
+				return
+			}
+			users = append(users, user)
+		}
+
+		if len(users) == 0 {
+			http.Error(res, "user not found", http.StatusNotFound)
+			return
+		}
+
+		res.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(res).Encode(users[0])
+	}
+}
+
 func updateUser(pool *pgxpool.Pool) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {

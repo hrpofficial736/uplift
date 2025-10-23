@@ -51,7 +51,7 @@ func getCheckoutSession(pool *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		url, err := payment.HandleCreateCheckoutSession()
+		url, err := payment.HandleCreateCheckoutSession(userId)
 		if err != nil {
 			http.Error(res, fmt.Sprintf("stripe payment error: %s", err), http.StatusInternalServerError)
 			return
@@ -61,13 +61,6 @@ func getCheckoutSession(pool *pgxpool.Pool) http.HandlerFunc {
 			http.Error(res, "failed to get checkout url", http.StatusInternalServerError)
 			return
 		}
-		rows, err := database.QueryDatabase(context.Background(), pool,
-			`UPDATE "Users" SET plan = $1 WHERE id = $2`, "PRO", userId)
-		if err != nil {
-			http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
 
 		res.WriteHeader(200)
 		serverResponse := map[string]interface{}{

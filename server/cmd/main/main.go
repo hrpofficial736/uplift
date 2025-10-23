@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	cfg := config.ConfigLoad()
-	formattedPort := ":" + cfg.Port
+	config.ConfigLoad()
+	formattedPort := ":" + config.Cfg.Port
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

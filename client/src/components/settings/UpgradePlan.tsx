@@ -2,8 +2,9 @@ import { useState } from "react";
 import { IoFlash } from "react-icons/io5";
 import { FiLoader } from "react-icons/fi";
 import { useSupabaseAuth } from "../../hooks/useSupabaseAuth";
+import type { User } from "../../lib/userType";
 
-export const UpgradePlan = () => {
+export const UpgradePlan = ({ info }: { info: User }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const { session } = useSupabaseAuth();
   const handleUpgrade = async () => {
@@ -26,13 +27,18 @@ export const UpgradePlan = () => {
     const data = await response.json();
     window.location.href = data.url;
   };
+  if (info.plan === "PRO") return null;
   return (
     <div className="w-full">
       <h4 className="text-white/40 text-sm font-[600]">Upgrade</h4>
       <div className="mt-1 p-3 flex justify-between items-center w-full bg-zinc-800 rounded-xl">
         <div className="flex flex-col">
-          <h1 className="font-[500] text-yellow-500 text-sm">Upgrade to Pro</h1>
-          <h4 className="font-[400] text-sm text-white/60">Max 10 prompts</h4>
+          <h1 className="font-[500] text-yellow-500 text-xs sm:text-sm">
+            Upgrade to Pro
+          </h1>
+          <h4 className="font-[400] text-xs sm:text-sm text-white/60">
+            Max 10 prompts
+          </h4>
         </div>
 
         <button

@@ -4,80 +4,57 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 
-	"github.com/hrpofficial736/uplift/server/internal/models"
+	"github.com/hrpofficial736/uplift/server/internal/config"
 	"github.com/hrpofficial736/uplift/server/internal/services/database"
-	"github.com/hrpofficial736/uplift/server/internal/services/payment"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/stripe/stripe-go/v83"
+	"github.com/stripe/stripe-go/v83/webhook"
 )
 
 func upgradePlan(pool *pgxpool.Pool) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodPost {
-			http.Error(res, "method not allowed", http.StatusMethodNotAllowed)
+		fmt.Println("in upgrade plan handler")
+		const maxBodyBytes = int64(65536)
+		req.Body = http.MaxBytesReader(res, req.Body, maxBodyBytes)
+		payload, err := io.ReadAll(req.Body)
+		if err != nil {
+			fmt.Println("error reading request body")
+			res.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 
-		var requestBody UpdateRequest
-		if err := json.NewDecoder(req.Body).Decode(&requestBody); err != nil {
-			http.Error(res, fmt.Sprintf("invalid request body: %v", err), http.StatusBadRequest)
-			return
-		}
+		stripeWebhookSecret := config.Cfg.StripeWebhookSecret
 
-		if requestBody.Email == "" {
-			http.Error(res, "email not found in the request body", http.StatusBadRequest)
-			return
-		}
-
-		fetchUserRows, err := database.QueryDatabase(context.Background(), pool,
-			`SELECT id from "Users" WHERE email = $1`, requestBody.Email)
+		event, err := webhook.ConstructEvent(payload, req.Header.Get("Stripe-Signature"), stripeWebhookSecret)
 
 		if err != nil {
-			http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
+			fmt.Printf("error constructing webhook event: %s\n", err)
+			res.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		defer fetchUserRows.Close()
-		var userId string
-		for fetchUserRows.Next() {
-			err := fetchUserRows.Scan(&userId)
-			if err != nil {
-				http.Error(res, "error while scanning", http.StatusInternalServerError)
-				return
+
+		if event.Type == "checkout.session.completed" {
+			var session stripe.CheckoutSession
+			fmt.Println("checkout session completed")
+			if err := json.Unmarshal(event.Data.Raw, &session); err == nil {
+				userId := session.ClientReferenceID
+				log.Printf("payment success for user: %s", userId)
+				fmt.Println(userId)
+				rows, err := database.QueryDatabase(context.Background(), pool,
+					`UPDATE "Users" SET plan = $1, plan_upgraded_at = now() WHERE id = $2`, "PRO", userId)
+				if err != nil {
+					fmt.Println("database query error")
+					http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
+					return
+				}
+				defer rows.Close()
+
+				res.WriteHeader(http.StatusOK)
 			}
 		}
-		if userId == "" {
-			http.Error(res, "failed to get user id", http.StatusInternalServerError)
-			return
-		}
-
-		url, err := payment.HandleCreateCheckoutSession()
-		if err != nil {
-			http.Error(res, fmt.Sprintf("stripe payment error: %s", err), http.StatusInternalServerError)
-			return
-		}
-
-		if url == "" {
-			http.Error(res, "failed to get checkout url", http.StatusInternalServerError)
-			return
-		}
-		rows, err := database.QueryDatabase(context.Background(), pool,
-			`UPDATE "Users" SET plan = $1 WHERE id = $2`, "PRO", userId)
-		if err != nil {
-			http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
-			return
-		}
-		defer rows.Close()
-
-		res.WriteHeader(200)
-		response := UpdateResponse{
-			Status:  200,
-			Message: "Plan upgraded successfully!",
-			Data: models.User{
-				Id: userId,
-			},
-		}
-
-		json.NewEncoder(res).Encode(response)
 	}
 }

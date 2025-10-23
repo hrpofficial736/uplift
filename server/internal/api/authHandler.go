@@ -52,14 +52,15 @@ func getAuthRouteHandler(pool *pgxpool.Pool) http.HandlerFunc {
 			users = append(users, user)
 		}
 		if len(users) == 0 {
-			_, err := database.QueryDatabase(context.Background(), pool,
+			fmt.Println("yes users length is zero")
+			rows, err := database.QueryDatabase(context.Background(), pool,
 				`INSERT INTO "Users" (name, email) VALUES ($1, $2)`,
 				requestBody["name"], requestBody["email"])
-
 			if err != nil {
 				http.Error(res, fmt.Sprintf("database query error: %v", err), http.StatusInternalServerError)
 				return
 			}
+			defer rows.Close()
 			return
 		}
 		finalResponse := UpdateResponse{

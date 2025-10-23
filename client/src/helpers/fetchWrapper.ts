@@ -37,10 +37,10 @@ export default async function callAPI(
     const data: Response = await response.json();
     return data;
   } catch (error) {
-    console.log(error);
     return {
       status: 500,
-      message: "",
+
+      message: `${error}`,
       data: [],
       repoInfo: {
         repoName: "",

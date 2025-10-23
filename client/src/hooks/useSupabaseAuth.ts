@@ -27,7 +27,6 @@ export const useSupabaseAuth = () => {
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      console.log(_event);
       if (!session) {
         toast.error("Error signing you in...");
         setAuthenticated(false);

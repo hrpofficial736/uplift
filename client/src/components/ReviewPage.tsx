@@ -17,13 +17,13 @@ export default function ReviewPage({ props }: { props: ReviewPageProps }) {
     <div className="w-screen flex flex-col px-10 py-7 bg-black text-white font-rubik">
       {/*Header*/}
       <Logo />
-      <div className="font-[600] mt-10 text-3xl flex items-center text-white/90 gap-4">
+      <div className="font-[600] mt-10 text-xl md:text-3xl flex items-center text-white/90 gap-4">
         <FaGithub className="text-white" />
         {props.ownerName}/{props.repoName}
       </div>
 
       {/*Cards Container*/}
-      <div className="mt-10 self-center flex flex-col justify-center items-center w-1/2 gap-5 h-full">
+      <div className="mt-10 self-center flex flex-col justify-center items-center xl:w-1/2 gap-5 h-full">
         {props.security?.trim() !== "" && (
           <motion.div
             initial={{

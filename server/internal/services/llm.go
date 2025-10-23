@@ -17,7 +17,7 @@ func CallLLM(prompt string) (types.Response, error) {
 		return types.Response{}, fmt.Errorf("invalid prompt")
 	}
 
-	cfg := config.ConfigLoad()
+	cfg := config.Cfg
 	geminiBaseUrl := cfg.GeminiBaseUrl
 	geminiModel := cfg.GeminiModel
 	geminiApiKey := cfg.GeminiAPIKey

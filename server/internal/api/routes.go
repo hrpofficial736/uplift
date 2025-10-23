@@ -7,10 +7,11 @@ import (
 )
 
 func RegisterRouter(mux *http.ServeMux, pool *pgxpool.Pool) {
-	mux.HandleFunc("/api/github", AuthMiddleware(processGithubUrlHandler))
+	mux.HandleFunc("/api/github", AuthMiddleware(processGithubUrlHandler(pool)))
 	mux.Handle("/api/update-user", AuthMiddleware(updateUser(pool)))
+	mux.Handle("/api/get-user-info", AuthMiddleware(getUserInfo(pool)))
 	mux.Handle("/api/upgrade-plan", AuthMiddleware(upgradePlan(pool)))
 	mux.Handle("/api/create-checkout-session", AuthMiddleware(getCheckoutSession(pool)))
 	mux.Handle("/api/auth", AuthMiddleware(getAuthRouteHandler(pool)))
-	mux.HandleFunc("/api", AuthMiddleware(processGithubUrlHandler))
+	mux.Handle("/api/webhook", upgradePlan(pool))
 }

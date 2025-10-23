@@ -17,14 +17,13 @@ const App = () => {
   });
 
   const { authenticated, session } = useSupabaseAuth();
-
   return (
     <Routes>
       <Route
         path="/"
         element={
           <AppLayout session={session!} authenticated={authenticated}>
-            <Prompt callback={setInfo} />
+            <Prompt session={session!} callback={setInfo} />
           </AppLayout>
         }
       />

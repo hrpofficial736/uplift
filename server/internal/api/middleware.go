@@ -11,15 +11,13 @@ import (
 )
 
 func MiddleWare(next http.Handler) http.Handler {
-	client := config.ConfigLoad().ClientUrl
+	client := config.Cfg.ClientUrl
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Access-Control-Allow-Origin", client)
 		res.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		res.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		res.Header().Set("Access-Control-Allow-Credentials", "true")
-		fmt.Println("in middleware")
 		if req.Method == http.MethodOptions {
-			fmt.Println("yes it is an options request.")
 			res.WriteHeader(http.StatusOK)
 			return
 		}
@@ -29,7 +27,7 @@ func MiddleWare(next http.Handler) http.Handler {
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
-		cfg := config.ConfigLoad()
+		cfg := config.Cfg
 		supabaseSecret := cfg.SupabaseJWTSecret
 		authHeader := req.Header.Get("Authorization")
 

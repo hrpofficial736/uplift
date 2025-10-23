@@ -9,8 +9,8 @@ import (
 	"github.com/stripe/stripe-go/v83/checkout/session"
 )
 
-func HandleCreateCheckoutSession() (interface{}, error) {
-	cfg := config.ConfigLoad()
+func HandleCreateCheckoutSession(userId string) (interface{}, error) {
+	cfg := config.Cfg
 	stripe.Key = cfg.StripeSecretKey
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
@@ -26,8 +26,12 @@ func HandleCreateCheckoutSession() (interface{}, error) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL: stripe.String(cfg.ClientUrl),
-		CancelURL:  stripe.String(cfg.ClientUrl),
+		SuccessURL:        stripe.String(cfg.ClientUrl),
+		CancelURL:         stripe.String(cfg.ClientUrl),
+		ClientReferenceID: stripe.String(userId),
+		Metadata: map[string]string{
+			"userId": userId,
+		},
 	}
 	s, err := session.New(params)
 	if err != nil {

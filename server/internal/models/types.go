@@ -8,8 +8,8 @@ type CheckPointResponse struct {
 }
 
 type Request struct {
-	Prompt string   `json:"prompt"`
-	Agents []string `json:"agents"`
+	Email  string `json:"email"`
+	Prompt string `json:"prompt"`
 }
 
 type Response struct {

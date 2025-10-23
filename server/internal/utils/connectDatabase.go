@@ -10,8 +10,7 @@ import (
 )
 
 func ConnectDatabase(ctx context.Context) *pgxpool.Pool {
-	cfg := config.ConfigLoad()
-	databaseUrl := cfg.DatabaseUrl
+	databaseUrl := config.Cfg.DatabaseUrl
 
 	config, err := pgxpool.ParseConfig(databaseUrl)
 	if err != nil {
