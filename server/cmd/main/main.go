@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/hrpofficial736/uplift/server/internal/api"
 	"github.com/hrpofficial736/uplift/server/internal/config"
@@ -13,6 +14,13 @@ import (
 func main() {
 	config.ConfigLoad()
 	formattedPort := ":" + config.Cfg.Port
+
+	go func() {
+		ticker := time.NewTicker(5 * 24 * time.Hour)
+		for range ticker.C {
+			utils.PingSupabase()
+		}
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -19,6 +19,8 @@ type Config struct {
 	SupabaseJWTSecret   string
 	StripeSecretKey     string
 	StripeWebhookSecret string
+	SupabaseUrl         string
+	SupabaseServiceKey  string
 }
 
 var Cfg *Config
@@ -41,6 +43,8 @@ func ConfigLoad() {
 		SupabaseJWTSecret:   getEnv("SUPABASE_JWT_SECRET", "jwt_secret"),
 		StripeSecretKey:     getEnv("STRIPE_SECRET_KEY", "stripe_secret_key"),
 		StripeWebhookSecret: getEnv("STRIPE_WEBHOOK_SECRET", "stripe_webhook_secret"),
+		SupabaseUrl:         getEnv("SUPABASE_URL", "supabase_url"),
+		SupabaseServiceKey:  getEnv("SUPABASE_SERVICE_KEY", "supabase_service_key"),
 	}
 	log.Println("Config loaded!")
 }
