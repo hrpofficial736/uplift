@@ -15,7 +15,7 @@ export type ReviewPageProps = {
 
 export default function ReviewPage({ props }: { props: ReviewPageProps }) {
   const navigate = useNavigate();
-  if (!props.repoName || !props.ownerName) navigate("/");
+  if (props.repoName.trim() === "" || props.ownerName.trim() === "") navigate("/");
   return (
     <div className="w-screen flex flex-col px-10 py-7 bg-black text-white font-rubik">
       {/*Header*/}
