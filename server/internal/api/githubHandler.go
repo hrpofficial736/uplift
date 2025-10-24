@@ -71,6 +71,7 @@ func processGithubUrlHandler(pool *pgxpool.Pool) http.HandlerFunc {
 		response, err := services.McpConnector(agents, services.CallLLM, request.Prompt)
 		if err != nil {
 			serverResponseWithErr := &models.Response{
+				Status:  777,
 				Message: err.Error(),
 			}
 			json.NewEncoder(res).Encode(serverResponseWithErr)

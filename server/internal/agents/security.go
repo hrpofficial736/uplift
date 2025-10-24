@@ -32,7 +32,9 @@ func SecurityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCP
 	}
 
 	llmResponse, err := callLLM(utils.GetSecuritySystemPrompt(owner, repo, response))
-
+	if llmResponse.Text == "" {
+		return nil, fmt.Errorf("model overloaded, please try after some time")
+	}
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the security data: %s", err)
 	}

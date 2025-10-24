@@ -14,7 +14,9 @@ func Mentor(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCPServer, 
 	fmt.Println("in mentor agent...")
 
 	llmResponse, err := callLLM(utils.GetMentorSystemPrompt(owner, repo, responses))
-
+	if llmResponse.Text == "" {
+		return nil, fmt.Errorf("model overloaded, please try after some time")
+	}
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the mentor data: %s", err)
 	}

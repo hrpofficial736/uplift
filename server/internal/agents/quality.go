@@ -32,7 +32,9 @@ func QualityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.AgentMCPS
 	}
 
 	llmResponse, err := callLLM(utils.GetQualitySystemPrompt(owner, repo, response))
-
+	if llmResponse.Text == "" {
+		return nil, fmt.Errorf("model overloaded, please try after some time")
+	}
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the quality data: %s", err)
 	}

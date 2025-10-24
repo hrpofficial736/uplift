@@ -11,7 +11,10 @@ func FormatModelResponse(result map[string]interface{}) types.Response {
 	fmt.Println(result)
 	candidates, ok := result["candidates"].([]interface{})
 	if !ok || len(candidates) == 0 {
-		log.Fatal("No candidates returned!")
+		log.Println("No candidates returned!")
+		return types.Response{
+			Text: "",
+		}
 	}
 
 	content, ok := candidates[0].(map[string]interface{})["content"].(map[string]interface{})

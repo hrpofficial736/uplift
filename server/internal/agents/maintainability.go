@@ -32,7 +32,9 @@ func MaintainabilityCritic(client *mcpclient.AgentMCPClient, server *mcpserver.A
 	}
 
 	llmResponse, err := callLLM(utils.GetMaintainabilitySystemPrompt(owner, repo, response))
-
+	if llmResponse.Text == "" {
+		return nil, fmt.Errorf("model overloaded, please try after some time")
+	}
 	if err != nil {
 		return nil, fmt.Errorf("error from the llm after passing it the maintainability data: %s", err)
 	}

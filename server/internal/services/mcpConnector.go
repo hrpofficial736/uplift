@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/hrpofficial736/uplift/server/internal/models"
 	"github.com/hrpofficial736/uplift/server/internal/services/types"
@@ -19,11 +18,11 @@ func McpConnector(agents []string, callLLM func(string) (types.Response, error),
 	cleaned := utils.CleanLLMOutput(result.Text)
 
 	if err != nil {
-		log.Fatalf("error occured on checkpoint: %s", err)
+		return nil, fmt.Errorf("error occured on checkpoint: %s\n", err)
 	}
 
 	if err := json.Unmarshal([]byte(cleaned), &fResult); err != nil {
-		log.Fatalf("error occured on checkpoint as conversion to the response struct failed: %s", err)
+		return nil, fmt.Errorf("error occured on checkpoint: %s\n", err)
 	}
 
 	if fResult.Valid {

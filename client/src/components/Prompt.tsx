@@ -55,6 +55,7 @@ const Prompt = ({
       return;
     } else if (data.status === 200 && data.reviewed) {
       setLoading(false);
+      let modelOverloaded: boolean = false;
       let reviewInfo: ReviewPageProps = {
         security: "",
         maintainability: "",
@@ -69,8 +70,13 @@ const Prompt = ({
           [section.agent]: section.data.text,
         };
       });
-      callback(reviewInfo);
-      navigate("/review");
+      if (!modelOverloaded) {
+        callback(reviewInfo);
+        navigate("/review");
+        return;
+      }
+    } else if (data.status === 777) {
+      toast.error("Service unavailable, please try again later...");
       return;
     } else {
       toast.error("Prompt limit reached");
